@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<title>SIAN LAB</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="SIAN LAB은 환자의 검색 의도와 AI 검색 환경을 분석하는 병원 GEO 마케팅 연구소입니다. ChatGPT, Gemini, 네이버 AI 브리핑의 답변 속에서 병원이 신뢰할 수 있는 출처로 인용되도록 진단부터 콘텐츠 설계, 인용 모니터링까지 함께합니다.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SIAN LAB | 병원 GEO 마케팅 연구소">
+<meta property="og:description" content="검색 노출을 넘어, AI가 신뢰하는 병원으로. 환자의 검색 의도와 AI 검색 환경을 분석하는 병원 GEO 마케팅 연구소.">
+<meta property="og:image" content="assets/sianlab-logo.webp">
+<meta property="og:locale" content="ko_KR">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231E3149'/%3E%3Ctext x='32' y='44' font-family='Arial' font-size='34' fill='%23fff' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
+<style>
+/* Layout: 빛이 드는 하얀 벽 + 하늘색 선 다발(웨이브)이 흐르는 연구소. 네이비 로고 타이포, 샌드톤 라인 아이콘.
+   의도적으로 밝은 단일 테마로 고정 (배너 이미지의 톤을 그대로 유지) */
+:root{
+  --bg:#F7F8F7; --surface:#FFFFFF; --ink:#1E3149; --sky:#3F86BE; --sky-soft:#E8F1F8;
+  --mist:#C9DCEA; --text:#34414F; --muted:#6B7785; --line:#E1E5E8; --sand:#B39869;
+  --f-display:"Jost","Noto Sans KR",sans-serif;
+  --f-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.8;word-break:keep-all;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+[hidden]:not([hidden=until-found i]){display:none!important}
+p{margin:0}
+h1,h2,h3{margin:0;color:var(--ink);text-wrap:balance;letter-spacing:-.03em;font-weight:500}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto}
+.label{font:400 12px/1.4 var(--f-display);letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+.label.sky{color:var(--sky)}
+.sec{padding-block:96px;position:relative}
+.sec-head{display:grid;gap:14px;margin-bottom:48px;max-width:40em}
+.sec-head h2{font-size:clamp(28px,3.4vw,42px);line-height:1.35}
+.sec-head p{color:var(--muted);font-size:17px}
+.hl{color:var(--sky);font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:10px;font:500 15px var(--f-body);padding:14px 24px;border:1px solid var(--ink);background:var(--ink);color:#fff;text-decoration:none;cursor:pointer;transition:background .2s,color .2s}
+.btn:hover{background:var(--sky);border-color:var(--sky)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn svg{width:16px;height:16px}
+.more{font:500 14px var(--f-body);color:var(--sky);text-decoration:none;display:inline-flex;gap:8px;align-items:center;background:none;border:0;padding:0;cursor:pointer}
+.more:hover{text-decoration:underline;text-underline-offset:4px}
+.sample{display:inline-block;font:500 11px var(--f-body);letter-spacing:.04em;color:var(--sky);background:var(--sky-soft);padding:2px 8px;vertical-align:middle}
+
+/* waves */
+.waves{position:absolute;inset:auto 0 0 0;height:340px;pointer-events:none;overflow:hidden;z-index:0}
+.waves svg{width:100%;height:100%;display:block}
+.waves path{fill:none;stroke:var(--sky);stroke-width:.7}
+
+/* header */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px 28px;padding-block:14px;flex-wrap:wrap}
+.brand{display:grid;gap:2px;text-decoration:none;color:var(--ink)}
+.brand .logo{font:400 25px/1 var(--f-display);letter-spacing:.1em}
+.brand .logo span{color:var(--sky)}
+.brand small{font:400 9.5px/1 var(--f-display);letter-spacing:.42em;color:var(--muted)}
+nav.menu{display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;min-width:0}
+nav.menu::-webkit-scrollbar{display:none}
+nav.menu a{font:500 15px var(--f-body);color:var(--muted);text-decoration:none;padding:8px 14px;white-space:nowrap;position:relative}
+nav.menu a:hover{color:var(--ink)}
+nav.menu a[aria-current="page"]{color:var(--ink)}
+nav.menu a[aria-current="page"]::after{content:"";position:absolute;left:14px;right:14px;bottom:2px;height:1.5px;background:var(--sky)}
+nav.menu a.cta{margin-left:10px;border:1px solid var(--ink);color:var(--ink)}
+nav.menu a.cta:hover,nav.menu a.cta[aria-current="page"]{background:var(--ink);color:#fff}
+nav.menu a.cta::after{display:none}
+
+/* hero */
+.hero{position:relative;overflow:hidden;padding-block:80px 120px;background:radial-gradient(120% 90% at 10% 0%,#FFFFFF 0%,var(--bg) 60%)}
+.hero::before{content:"";position:absolute;inset:-10% 40% 40% -10%;background:repeating-linear-gradient(115deg,rgba(30,49,73,.035) 0 22px,transparent 22px 64px);filter:blur(18px);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.hero-copy{min-width:0;display:grid;gap:26px}
+.hero-copy .rule{display:flex;align-items:center;gap:14px}
+.hero-copy .rule::after{content:"";width:48px;height:1px;background:var(--sky)}
+.hero h1{font-size:clamp(34px,4.6vw,58px);line-height:1.3;font-weight:400}
+.hero h1 b{font-weight:700;color:var(--sky)}
+.hero .lead{font-size:clamp(16px,1.4vw,19px);color:var(--text);max-width:30em;font-weight:300}
+.hero .actions{display:flex;gap:12px;flex-wrap:wrap}
+.hero-visual{position:relative;min-width:0;padding:0 0 40px 40px}
+.photo{aspect-ratio:4/5;max-width:100%;background:#EDEFEF url("assets/lab-banner.webp") 100% 50%/cover no-repeat;box-shadow:0 30px 60px -30px rgba(30,49,73,.35)}
+.answer{position:absolute;left:0;bottom:0;width:min(360px,88%);background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border:1px solid var(--line);padding:22px 22px 18px;box-shadow:0 24px 48px -24px rgba(30,49,73,.35);display:grid;gap:12px}
+.answer .top{display:flex;align-items:center;gap:8px;font:400 11px var(--f-display);letter-spacing:.24em;color:var(--muted)}
+.answer .top i{width:7px;height:7px;border-radius:50%;background:var(--sky)}
+.answer .q{font-size:15px;font-weight:500;color:var(--ink);line-height:1.6}
+.answer .a{font-size:13.5px;line-height:1.75;color:var(--text)}
+.answer sup{font:500 10px var(--f-display);color:#fff;background:var(--sky);padding:0 4px;margin-left:2px}
+.answer .src{border-top:1px solid var(--line);padding-top:10px;font-size:12.5px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.answer .src b{color:var(--ink);font-weight:500}
+.answer .src em{font-style:normal;color:var(--muted)}
+
+/* pillars */
+.pillars{background:var(--surface);border-block:1px solid var(--line)}
+.pillars .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.pillar{padding:34px 26px;display:grid;gap:10px;align-content:start;border-right:1px solid var(--line);min-width:0}
+.pillar:last-child{border-right:0}
+.pillar svg{width:30px;height:30px;color:var(--sand)}
+.pillar h3{font-size:18px;font-weight:500}
+.pillar p{font-size:14.5px;color:var(--muted);line-height:1.7}
+
+/* fan-out */
+.fan .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:center}
+.fan .wrap > *{min-width:0}
+.fan-text{display:grid;gap:18px}
+.fan-text h2{font-size:clamp(28px,3.4vw,42px);line-height:1.35}
+.fan-text p{color:var(--muted)}
+.compare{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;margin-top:8px;font-size:15px}
+.compare dt{font:400 11px/2.3 var(--f-display);letter-spacing:.2em;color:var(--muted)}
+.compare dd{margin:0;padding:6px 14px;background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.compare dd.ai{border-color:var(--mist);background:var(--sky-soft)}
+.tree{background:var(--surface);border:1px solid var(--line);padding:32px 28px;display:grid;gap:22px}
+.tree .ask{justify-self:start;max-width:100%;background:var(--ink);color:#fff;padding:14px 18px;font-size:15.5px;line-height:1.6;position:relative}
+.tree .ask small{display:block;font:400 10.5px var(--f-display);letter-spacing:.24em;color:var(--mist);margin-bottom:4px}
+.branches{list-style:none;margin:0;padding:0 0 0 22px;border-left:1px solid var(--mist);display:grid;gap:10px;margin-left:22px}
+.branches li{position:relative;display:grid;grid-template-columns:86px 1fr;gap:12px;align-items:baseline;font-size:14.5px}
+.branches li::before{content:"";position:absolute;left:-22px;top:.9em;width:16px;height:1px;background:var(--mist)}
+.branches b{font-weight:500;color:var(--sky)}
+.branches span{color:var(--text)}
+.tree .note{font-size:13px;color:var(--muted)}
+
+/* seo vs geo */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);background:var(--surface)}
+.vs > div{padding:34px 32px;display:grid;gap:16px;align-content:start;min-width:0}
+.vs > div + div{background:var(--sky-soft);border-left:1px solid var(--mist)}
+.vs h3{font:400 26px var(--f-display);letter-spacing:.08em}
+.vs > div + div h3{color:var(--sky)}
+.vs ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.vs li{display:grid;grid-template-columns:18px 1fr;gap:8px}
+.vs li::before{content:"–";color:var(--muted)}
+.vs > div + div li::before{content:"→";color:var(--sky)}
+.vs-foot{margin-top:18px;font-size:14px;color:var(--muted)}
+
+/* process */
+.process{background:var(--surface);border-block:1px solid var(--line)}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,1fr);counter-reset:s}
+.steps li{counter-increment:s;padding:26px 18px 6px 0;border-top:1px solid var(--ink);display:grid;gap:10px;align-content:start;min-width:0;position:relative}
+.steps li::before{content:counter(s,decimal-leading-zero);font:400 13px var(--f-display);letter-spacing:.2em;color:var(--sky)}
+.steps li::after{content:"";position:absolute;top:-4px;left:0;width:7px;height:7px;border-radius:50%;background:var(--sky)}
+.steps h3{font-size:17px;font-weight:500}
+.steps p{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* cases */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.chip{font:500 14px var(--f-body);color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:7px 16px;cursor:pointer}
+.chip:hover{color:var(--ink);border-color:var(--mist)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.case-list{display:grid;gap:16px}
+.case{background:var(--surface);border:1px solid var(--line);display:grid;grid-template-columns:1.3fr 1.3fr .8fr;gap:32px;padding:30px 32px;align-items:start}
+.case > *{min-width:0}
+.case .dept{font-size:13px;color:var(--sky);font-weight:500}
+.case h3{font-size:20px;line-height:1.5;margin:6px 0 14px}
+.case .q{font-size:14px;color:var(--text);border-left:2px solid var(--mist);padding-left:12px}
+.case .q span{display:block;font:400 10.5px var(--f-display);letter-spacing:.22em;color:var(--muted)}
+.case dl{margin:0;display:grid;grid-template-columns:38px 1fr;gap:8px 12px;font-size:14.5px;line-height:1.7}
+.case dt{font-size:12px;color:var(--muted);padding-top:2px}
+.case dd{margin:0}
+.metric{text-align:right}
+.metric .k{font-size:12px;color:var(--muted)}
+.metric .v{font:300 42px/1.1 var(--f-display);font-variant-numeric:tabular-nums;color:var(--ink);margin-top:6px;white-space:nowrap}
+.metric .v .from{font-size:24px;color:var(--muted)}
+.metric .v .arr{font-size:18px;color:var(--muted);margin:0 6px}
+.metric .v .to{color:var(--sky);font-weight:400}
+.metric .t{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* insights */
+.posts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.post{background:var(--surface);border:1px solid var(--line);padding:28px 26px 24px;display:grid;grid-template-rows:auto auto 1fr auto;gap:12px;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s;min-width:0}
+.post:hover{border-color:var(--sky);transform:translateY(-3px)}
+.post .meta{display:flex;justify-content:space-between;gap:10px;font:400 12px var(--f-display);letter-spacing:.14em;color:var(--muted)}
+.post .meta b{font:500 12px var(--f-body);letter-spacing:0;color:var(--sand)}
+.post h3{font-size:19px;line-height:1.5}
+.post p{font-size:14.5px;color:var(--muted);line-height:1.75}
+.post .go{font:500 13.5px var(--f-body);color:var(--sky);padding-top:10px;border-top:1px solid var(--line)}
+.post-list{display:grid;border-top:1px solid var(--ink)}
+.post-row{display:grid;grid-template-columns:130px 1fr auto;gap:28px;padding:30px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;align-items:start}
+.post-row > *{min-width:0}
+.post-row:hover h3{color:var(--sky)}
+.post-row .d{font:400 13px var(--f-display);letter-spacing:.12em;color:var(--muted);padding-top:4px;font-variant-numeric:tabular-nums}
+.post-row h3{font-size:21px;line-height:1.5;margin-bottom:8px;transition:color .2s}
+.post-row p{font-size:15px;color:var(--muted)}
+.post-row .tag{font-size:12.5px;color:var(--sand);border:1px solid #E2D7C3;padding:2px 10px;white-space:nowrap}
+
+/* quote band */
+.belief{text-align:center;overflow:hidden}
+.belief .wrap{position:relative;z-index:1;display:grid;gap:22px;justify-items:center}
+.belief blockquote{margin:0;font-size:clamp(24px,3vw,36px);line-height:1.5;color:var(--ink);font-weight:300;max-width:20em}
+.belief blockquote b{font-weight:700;color:var(--sky)}
+.belief cite{font-style:normal;font-size:14px;color:var(--muted)}
+
+.notice{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start;background:var(--surface);border:1px solid var(--line);padding:24px 28px;font-size:15px}
+.notice svg{width:26px;height:26px;color:var(--sand);margin-top:2px}
+.notice b{color:var(--ink);font-weight:500}
+
+/* cta */
+.cta-band{background:var(--ink);color:#DCE6EF;overflow:hidden}
+.cta-band .waves path{stroke:#8DB8DA}
+.cta-band .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:end}
+.cta-band h2{color:#fff;font-size:clamp(28px,3.6vw,44px);line-height:1.35;font-weight:300}
+.cta-band h2 b{font-weight:700;color:#9CC8EA}
+.cta-band p{margin-top:16px;color:#B8C7D6}
+.cta-band .label{color:#9CC8EA}
+.cta-band .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.cta-band .btn{background:#fff;color:var(--ink);border-color:#fff}
+.cta-band .btn:hover{background:var(--sky);color:#fff;border-color:var(--sky)}
+.cta-band .btn.line{background:transparent;color:#fff;border-color:#9CC8EA}
+.cta-band .btn.line:hover{background:#fff;color:var(--ink);border-color:#fff}
+
+/* page intro (sub views) */
+.intro{padding-block:72px 56px;border-bottom:1px solid var(--line);position:relative;overflow:hidden;background:linear-gradient(180deg,#fff,var(--bg))}
+.intro .wrap{position:relative;z-index:1;display:grid;gap:16px}
+.intro h1{font-size:clamp(32px,4vw,50px);line-height:1.3;font-weight:400}
+.intro h1 b{font-weight:700;color:var(--sky)}
+.intro p{color:var(--muted);max-width:38em;font-size:17px}
+.intro .waves{height:220px;opacity:.7}
+
+/* lab */
+.lab-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:64px;align-items:start}
+.lab-grid > *{min-width:0}
+.lab-grid .photo{aspect-ratio:1/1}
+.lab-text{display:grid;gap:20px;font-size:17px}
+.lab-text h2{font-size:clamp(26px,3vw,36px);line-height:1.4}
+.principles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.principles li{background:var(--surface);padding:30px 28px;display:grid;gap:10px;align-content:start;min-width:0}
+.principles svg{width:28px;height:28px;color:var(--sand)}
+.principles h3{font-size:19px}
+.principles p{font-size:15px;color:var(--muted)}
+.story{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;background:var(--sky-soft);border:1px solid var(--mist);padding:30px 32px}
+.story > *{min-width:0}
+.story h3{font-size:20px;margin:6px 0 6px}
+.story p{color:var(--text);font-size:15px}
+
+/* service */
+.svc-list{display:grid;gap:0;border-top:1px solid var(--ink)}
+.svc{display:grid;grid-template-columns:70px 1fr 1fr;gap:32px;padding:34px 0;border-bottom:1px solid var(--line)}
+.svc > *{min-width:0}
+.svc .n{font:300 34px/1 var(--f-display);color:var(--sky)}
+.svc h3{font-size:22px;margin-bottom:10px}
+.svc p{color:var(--muted);font-size:15.5px}
+.svc .out{display:grid;gap:8px;align-content:start}
+.svc .out .label{font-size:11px}
+.svc .out ul{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:15px}
+.svc .out li{display:grid;grid-template-columns:16px 1fr;gap:6px}
+.svc .out li::before{content:"·";color:var(--sky);font-weight:700}
+.fit{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.fit div{background:var(--surface);border:1px solid var(--line);padding:24px;font-size:15.5px;color:var(--ink);min-width:0}
+.fit div span{display:block;font:400 11px var(--f-display);letter-spacing:.22em;color:var(--sand);margin-bottom:8px}
+.faq{display:grid;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;list-style:none;padding:22px 40px 22px 0;font-size:17px;color:var(--ink);font-weight:500;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:6px;top:18px;font:300 24px var(--f-display);color:var(--sky);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding:0 0 24px;color:var(--muted);max-width:46em}
+
+/* contact */
+.contact-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:start}
+.contact-grid > *{min-width:0}
+form.inq{background:var(--surface);border:1px solid var(--line);padding:34px 32px;display:grid;grid-template-columns:1fr 1fr;gap:18px 20px}
+form.inq .full{grid-column:1/-1}
+form.inq label{display:grid;gap:6px;font-size:13.5px;color:var(--muted);font-weight:500}
+form.inq input,form.inq select,form.inq textarea{font:400 15.5px var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:12px 14px;width:100%;border-radius:0}
+form.inq input:focus,form.inq select:focus,form.inq textarea:focus{outline:none;border-color:var(--sky);background:#fff}
+form.inq textarea{min-height:130px;resize:vertical}
+form.inq .agree{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;font-weight:400}
+form.inq .agree input{width:auto;margin-top:5px}
+form.inq .row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.form-msg{font-size:14px;color:var(--sky)}
+.form-msg.warn{color:#9A5B2E}
+.hp{position:absolute;left:-9999px}
+.side{display:grid;gap:16px}
+.side .box{background:var(--surface);border:1px solid var(--line);padding:26px 26px}
+.side .box h3{font-size:17px;margin:6px 0 10px}
+.side .box p{font-size:14.5px;color:var(--muted)}
+.mail{display:flex;border:1px solid var(--ink);margin-top:12px;flex-wrap:wrap}
+.mail span{font:400 16px var(--f-display);letter-spacing:.04em;color:var(--ink);padding:11px 14px;flex:1;user-select:all;min-width:0;overflow-wrap:anywhere}
+.mail button{font:500 14px var(--f-body);background:var(--ink);color:#fff;border:0;padding:11px 16px;cursor:pointer}
+.side .mail-btn{margin-top:10px;width:100%;justify-content:center}
+.side ol{margin:0;padding-left:18px;font-size:14.5px;color:var(--text);display:grid;gap:6px}
+
+/* footer */
+footer{background:var(--surface);border-top:1px solid var(--line)}
+footer .wrap{display:grid;grid-template-columns:1fr auto;gap:28px;padding-block:44px 36px;align-items:start}
+footer .wrap > *{min-width:0}
+footer p{font-size:14px;color:var(--muted);margin-top:14px}
+footer ul{list-style:none;margin:0;padding:0;display:flex;gap:8px 24px;flex-wrap:wrap;font-size:14px}
+footer ul a{text-decoration:none;color:var(--text)}
+footer ul a:hover{color:var(--sky)}
+footer .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:20px;font:400 11px var(--f-display);letter-spacing:.24em;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:960px){
+  .hero .wrap,.fan .wrap,.lab-grid,.contact-grid,.cta-band .wrap{grid-template-columns:1fr}
+  .hero-visual{max-width:520px}
+  .pillars .wrap{grid-template-columns:1fr 1fr}
+  .pillar:nth-child(2){border-right:0}
+  .pillar:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .steps{grid-template-columns:repeat(3,1fr);row-gap:28px}
+  .case{grid-template-columns:1fr;gap:18px}
+  .metric{text-align:left}
+  .posts{grid-template-columns:1fr}
+  .svc{grid-template-columns:50px 1fr}
+  .svc .out{grid-column:2}
+  .fit{grid-template-columns:1fr}
+  .cta-band .actions{justify-content:flex-start}
+  .lab-grid .photo{max-width:420px}
+}
+@media (max-width:600px){
+  .sec{padding-block:64px}
+  .hero{padding-block:48px 88px}
+  .hero-visual{padding:0 0 60px 0}
+  .answer{width:92%;left:4%}
+  .pillars .wrap{grid-template-columns:1fr}
+  .pillar{border-right:0;border-bottom:1px solid var(--line)}
+  .pillar:last-child{border-bottom:0}
+  .vs{grid-template-columns:1fr}
+  .vs > div + div{border-left:0;border-top:1px solid var(--mist)}
+  .steps{grid-template-columns:1fr 1fr}
+  .principles{grid-template-columns:1fr}
+  .post-row{grid-template-columns:1fr;gap:8px}
+  .post-row .tag{justify-self:start}
+  .story{grid-template-columns:1fr}
+  form.inq{grid-template-columns:1fr;padding:26px 20px}
+  .branches li{grid-template-columns:1fr;gap:0}
+  .tree{padding:24px 18px}
+  .case{padding:24px 20px}
+  footer .wrap{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){
+  .view:not([hidden]){animation:rise .5s ease}
+  @keyframes rise{from{transform:translateY(8px)}to{transform:none}}
+  .waves g.drift{animation:drift 14s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:translateX(0)}to{transform:translateX(-40px)}}
+}
+</style>
+</head>
+<body>
+
+<header class="top pad">
+  <div class="wrap">
+    <a class="brand" href="#home" data-go="home" aria-label="SIAN LAB 홈">
+      <span class="logo">SIAN <span>LAB</span></span>
+      <small>MEDICAL GEO MARKETING</small>
+    </a>
+    <nav class="menu" aria-label="주 메뉴">
+      <a href="#home" data-go="home">홈</a>
+      <a href="#lab" data-go="lab">연구소</a>
+      <a href="#service" data-go="service">서비스</a>
+      <a href="#cases" data-go="cases">GEO 케이스</a>
+      <a href="#insights" data-go="insights">인사이트</a>
+      <a href="#contact" data-go="contact" class="cta">진단 문의</a>
+    </nav>
+  </div>
+</header>
+
+<!-- SVG icon sprites -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-search" viewBox="0 0 32 32"><circle cx="14" cy="14" r="8.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M20.5 20.5 27 27" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="i-ai" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M16 5.5v21M10 9.5c2.5 2 2.5 4.5 0 6.5s-2.5 4.5 0 6.5M22 9.5c-2.5 2-2.5 4.5 0 6.5s2.5 4.5 0 6.5" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 32 32"><path d="M8.5 4.5h11l5 5v18h-16z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M19.5 4.5v5h5M12 15h9M12 19h9M12 23h6" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+    <symbol id="i-grow" viewBox="0 0 32 32"><path d="M6 27.5h21" stroke="currentColor" stroke-width="1.3"/><path d="M9 24v-5M14 24v-8M19 24v-11M24 24v-15" stroke="currentColor" stroke-width="2.2"/><path d="M7 15l6-5 4 3 8-7m0 0h-4m4 0v4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 32 32"><path d="M16 4.5 26 8v8c0 6-4.2 10-10 11.5C10.2 26 6 22 6 16V8z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="m11.5 16 3.2 3.2 6-6.4" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+    <symbol id="i-people" viewBox="0 0 32 32"><circle cx="12" cy="11" r="4" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="22" cy="12.5" r="3.2" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 26c.8-5 3.8-7.5 7.5-7.5s6.7 2.5 7.5 7.5M19 19.5c4.5-.8 7.6 1.3 8.5 5.5" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+  </defs>
+</svg>
+
+<main>
+
+<!-- ======================= HOME ======================= -->
+<div class="view" id="v-home" data-view="home">
+
+  <section class="hero pad">
+    <div class="wrap">
+      <div class="hero-copy">
+        <p class="label sky rule">From search to trust</p>
+        <h1>검색 노출을 넘어,<br><b>AI가 신뢰하는 병원</b>으로.</h1>
+        <p class="lead">SIAN LAB은 환자의 검색 의도와 AI 검색 환경을 분석하는 병원 GEO 마케팅 연구소입니다. ChatGPT, Gemini, 네이버 AI 브리핑이 답변을 만들 때 우리 병원의 정보가 믿을 수 있는 출처로 쓰이도록 설계합니다.</p>
+        <div class="actions">
+          <a class="btn" href="#contact" data-go="contact">무료 AI 노출 진단 신청 <svg><use href="#i-arrow"/></svg></a>
+          <a class="btn ghost" href="#insights" data-go="insights">GEO 칼럼 읽기</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="photo" role="img" aria-label="SIAN LAB 연구소 입구"></div>
+        <div class="answer" aria-label="AI 답변 예시">
+          <p class="top"><i></i>AI ANSWER · 예시</p>
+          <p class="q">"계단 내려갈 때 무릎이 아파요. 분당에서 어느 병원에 가야 할까요?"</p>
+          <p class="a">계단을 내려갈 때 생기는 무릎 통증은 연골이나 슬개대퇴관절 문제일 수 있어 정형외과 진료가 우선 권장됩니다.<sup>1</sup> 검사 과정과 비수술 치료 단계를 공개한 병원을 참고해 보세요.<sup>1</sup></p>
+          <p class="src"><em>[1]</em><b>ㅇㅇ정형외과 · 무릎 통증 진료 안내</b></p>
+        </div>
+      </div>
+    </div>
+    <div class="waves" data-waves="hero"></div>
+  </section>
+
+  <section class="pillars pad" aria-label="SIAN LAB이 하는 일">
+    <div class="wrap">
+      <article class="pillar"><svg><use href="#i-search"/></svg><h3>검색 의도 분석</h3><p>환자가 실제로 던지는 질문과 그 뒤에 숨은 걱정을 찾습니다.</p></article>
+      <article class="pillar"><svg><use href="#i-ai"/></svg><h3>AI 검색 최적화</h3><p>AI가 병원 정보를 찾고 이해하는 방식에 맞춰 구조를 다듬습니다.</p></article>
+      <article class="pillar"><svg><use href="#i-doc"/></svg><h3>의료 콘텐츠 전략</h3><p>정확성, 출처, 의료진 전문성, 최신성을 갖춘 콘텐츠를 설계합니다.</p></article>
+      <article class="pillar"><svg><use href="#i-grow"/></svg><h3>브랜드 성장</h3><p>한 번의 노출이 아니라 시간이 지날수록 쌓이는 신뢰를 만듭니다.</p></article>
+    </div>
+  </section>
+
+  <section class="sec fan pad">
+    <div class="wrap">
+      <div class="fan-text">
+        <p class="label">Query fan-out</p>
+        <h2>환자는 이제 키워드가 아니라<br><span class="hl">자기 상황</span>을 묻습니다.</h2>
+        <p>AI는 질문 하나를 받으면 증상, 원인, 진료과목, 검사, 치료 방법처럼 여러 갈래로 나눠 정보를 찾습니다. 이 갈래 하나하나에 병원이 답을 갖고 있어야 관련성 높은 출처로 쓰일 수 있습니다.</p>
+        <dl class="compare">
+          <dt>SEARCH</dt><dd>무릎 통증 병원</dd>
+          <dt>AI</dt><dd class="ai">계단을 내려갈 때 무릎이 아픈데 원인이 뭘까요?</dd>
+        </dl>
+      </div>
+      <div class="tree" aria-label="질문 하나가 여러 세부 질문으로 확장되는 예시">
+        <p class="ask"><small>환자의 질문</small>계단을 내려갈 때 무릎이 아픈데 원인이 뭘까요?</p>
+        <ul class="branches">
+          <li><b>증상</b><span>내려갈 때만 아픈 통증은 어떤 의미일까?</span></li>
+          <li><b>원인</b><span>연골 손상, 슬개대퇴 통증, 인대 문제의 차이</span></li>
+          <li><b>진료과목</b><span>정형외과와 재활의학과 중 어디로 가야 할까?</span></li>
+          <li><b>검사</b><span>엑스레이, 초음파, MRI는 언제 필요할까?</span></li>
+          <li><b>치료 방법</b><span>비수술 치료로 가능한 범위와 기간</span></li>
+        </ul>
+        <p class="note">AI 서비스마다 검색 방식과 참고하는 정보는 다를 수 있습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec pad" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="label">SEO &amp; GEO</p>
+        <h2>검색 1위를 넘어,<br>AI 답변의 출처가 되는 일</h2>
+      </div>
+      <div class="vs">
+        <div>
+          <p class="label">Before</p>
+          <h3>SEO</h3>
+          <ul><li>검색 결과 순위를 높이는 데 집중</li><li>클릭이 일어나야 생기는 노출 효과</li><li>광고가 멈추면 함께 줄어드는 유입</li></ul>
+        </div>
+        <div>
+          <p class="label sky">Now</p>
+          <h3>GEO</h3>
+          <ul><li>AI가 이해하고 신뢰하는 정보 구조 설계</li><li>답변 문장 안에서 병원이 직접 언급</li><li>쌓인 신뢰가 브랜드 자산으로 남음</li></ul>
+        </div>
+      </div>
+      <p class="vs-foot">GEO가 생겼다고 SEO가 사라지지는 않습니다. 좋은 SEO는 여전히 GEO의 기본기입니다.</p>
+    </div>
+  </section>
+
+  <section class="sec process pad">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="label">How we work</p>
+        <h2>진단에서 개선까지, 한 흐름으로</h2>
+        <p>어느 한 단계만 잘해서는 성과가 나지 않습니다. 병원마다 우선순위를 다르게 잡고 매달 다시 측정합니다.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>현황 진단</h3><p>주요 AI에서 지금 어떤 병원이 인용되는지 기록합니다.</p></li>
+        <li><h3>환자 질문 분석</h3><p>질문이 어떤 세부 궁금증으로 확장되는지 지도로 그립니다.</p></li>
+        <li><h3>정보 구조 설계</h3><p>네이버와 생성형 AI, 채널마다 다른 구조를 잡습니다.</p></li>
+        <li><h3>콘텐츠 실행</h3><p>질환, 검사, 치료, 비용을 질문과 답 형태로 정리합니다.</p></li>
+        <li><h3>노출·인용 관찰</h3><p>같은 질문으로 다시 물어 인용 횟수와 위치를 봅니다.</p></li>
+        <li><h3>전략 개선</h3><p>관찰한 결과를 다음 달 우선순위의 근거로 씁니다.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec pad">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="label">GEO cases <span class="sample">예시 데이터</span></p>
+        <h2>같은 질문을 다시 물었을 때<br>무엇이 달라지는가</h2>
+      </div>
+      <div class="case-list" data-cases="preview"></div>
+      <p style="margin-top:22px"><a class="more" href="#cases" data-go="cases">케이스 전체 보기 <svg width="14" height="14"><use href="#i-arrow"/></svg></a></p>
+    </div>
+  </section>
+
+  <section class="sec pad" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="label">Insights</p>
+        <h2>SIAN LAB의 GEO 연구 노트</h2>
+        <p>병원 GEO를 공부하고 검증하며 정리한 칼럼입니다.</p>
+      </div>
+      <div class="posts" data-posts="cards"></div>
+      <p style="margin-top:22px"><a class="more" href="#insights" data-go="insights">칼럼 전체 보기 <svg width="14" height="14"><use href="#i-arrow"/></svg></a></p>
+    </div>
+  </section>
+
+  <section class="sec belief pad" style="padding-top:24px">
+    <div class="wrap">
+      <p class="label">What we believe</p>
+      <blockquote><b>기술을 이해하는 능력</b>과<br><b>사람을 이해하는 능력.</b><br>둘이 함께할 때 병원은 오래 기억됩니다.</blockquote>
+      <cite>AI는 정보를 찾는 새로운 창구일 뿐, 그 정보를 믿고 움직이는 것은 사람입니다.</cite>
+    </div>
+    <div class="waves" data-waves="soft"></div>
+  </section>
+
+  <section class="sec pad" style="padding-top:0">
+    <div class="wrap">
+      <div class="notice"><svg><use href="#i-shield"/></svg><p><b>의료광고 기준을 지킵니다.</b> 치료 효과 보장, 후기 형식의 과장, 다른 병원과의 비교처럼 의료법 제56조가 금지하는 표현은 쓰지 않습니다. 정확한 정보가 AI에게도 가장 오래 인용됩니다.</p></div>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= LAB ======================= -->
+<div class="view" id="v-lab" data-view="lab" hidden>
+  <section class="intro pad">
+    <div class="wrap">
+      <p class="label sky">About the lab</p>
+      <h1>좋은 의료는<br><b>정확히 발견되어야</b> 합니다.</h1>
+      <p>SIAN LAB은 광고 문구를 더 많이 만드는 곳이 아닙니다. 환자의 실제 질문을 읽고, 의료진의 지식과 진료 기준을 AI가 이해하고 인용할 수 있는 정보로 바꿉니다.</p>
+    </div>
+    <div class="waves" data-waves="soft"></div>
+  </section>
+
+  <section class="sec pad">
+    <div class="wrap lab-grid">
+      <div class="photo" role="img" aria-label="SIAN LAB 연구소 입구"></div>
+      <div class="lab-text">
+        <p class="label">Why a lab</p>
+        <h2>정답 공식이 아니라,<br>좋은 결과의 확률을 높이는 선택</h2>
+        <p>SEO도 GEO도 그대로 따라 하면 반드시 결과가 나오는 공식은 없습니다. 경쟁 병원도, 환자의 상황도, 검색 플랫폼의 기준도 계속 바뀌기 때문입니다.</p>
+        <p>그래서 SIAN LAB은 스스로를 연구소라고 부릅니다. 같은 질문을 여러 AI에 직접 물어보고, 어떤 정보가 출처로 쓰이는지 기록하고, 결과가 기대에 못 미쳐도 다음 전략의 근거로 삼습니다.</p>
+        <p>한두 번의 검색 결과로 단정하지 않고, 데이터를 쌓아 판단합니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec pad" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="label">Principles</p>
+        <h2>SIAN LAB이 일하는 네 가지 원칙</h2>
+      </div>
+      <ul class="principles">
+        <li><svg><use href="#i-search"/></svg><h3>키워드보다 질문에서 시작합니다</h3><p>검색량보다 먼저 환자가 어떤 상황에서 질문을 시작하고, 어떤 답을 얻어야 다음 판단을 내릴 수 있는지 봅니다.</p></li>
+        <li><svg><use href="#i-ai"/></svg><h3>채널마다 다르게 설계합니다</h3><p>네이버 AEO와 생성형 AI의 GEO는 겹치지만 같지 않습니다. 한 채널의 방법을 다른 채널에 그대로 옮기지 않습니다.</p></li>
+        <li><svg><use href="#i-people"/></svg><h3>노출보다 신뢰를 봅니다</h3><p>인용 횟수는 관찰할 지표일 뿐 목적이 아닙니다. 환자와 원장님이 믿을 수 있는 정보인지가 먼저입니다.</p></li>
+        <li><svg><use href="#i-shield"/></svg><h3>의료광고 기준을 지킵니다</h3><p>의료정보의 정확성과 출처, 의료진의 전문성, 정보의 최신성을 지키고 의료법이 금지하는 표현은 쓰지 않습니다.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec pad" style="padding-top:0">
+    <div class="wrap">
+      <a class="story" href="https://sianlab.inblog.io/%EB%B3%91%EC%9B%90-geo-%EB%A7%88%EC%BC%80%ED%8C%85-%EC%84%A0%ED%83%9D%EC%9D%98-%EC%9D%B4%EC%9C%A0-%EA%B2%BD%EB%A0%A5%EB%8B%A8%EC%A0%88-%EC%97%84%EB%A7%88%EA%B0%80-%EB%9B%B0%EC%96%B4%EB%93%A0-%EA%B9%8C%EB%8B%AD-390067" target="_blank" rel="noopener" style="text-decoration:none">
+        <div>
+          <p class="label">Founder's note</p>
+          <h3>병원 GEO 마케팅을 선택한 이유</h3>
+          <p>SIAN LAB을 시작하게 된 이야기를 칼럼으로 남겼습니다.</p>
+        </div>
+        <span class="btn ghost">이야기 읽기 <svg><use href="#i-arrow"/></svg></span>
+      </a>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= SERVICE ======================= -->
+<div class="view" id="v-service" data-view="service" hidden>
+  <section class="intro pad">
+    <div class="wrap">
+      <p class="label sky">Services</p>
+      <h1>콘텐츠 발행이 아니라<br><b>전략 설계</b>부터 함께합니다.</h1>
+      <p>AI 덕분에 글을 만드는 속도는 누구나 빨라졌습니다. 차이는 병원의 현재 상태를 읽고, 무엇을 먼저 할지 정하는 데서 생깁니다.</p>
+    </div>
+    <div class="waves" data-waves="soft"></div>
+  </section>
+
+  <section class="sec pad">
+    <div class="wrap">
+      <div class="svc-list">
+        <article class="svc">
+          <p class="n">01</p>
+          <div><h3>AI 노출 진단</h3><p>환자가 실제로 물을 법한 질문 50~100개를 ChatGPT, Gemini, Perplexity, 네이버 AI 브리핑에 입력하고, 지금 어떤 병원과 어떤 출처가 쓰이는지 기록합니다.</p></div>
+          <div class="out"><p class="label">결과물</p><ul><li>질문별 인용 현황표</li><li>경쟁 병원 출처 분석</li><li>온라인 병원 정보 일관성 점검</li></ul></div>
+        </article>
+        <article class="svc">
+          <p class="n">02</p>
+          <div><h3>환자 질문 설계</h3><p>진료과목과 지역을 기준으로 환자의 질문이 어떤 세부 궁금증으로 확장되는지 정리하고, 작업할 질문에 우선순위를 매깁니다.</p></div>
+          <div class="out"><p class="label">결과물</p><ul><li>쿼리 팬아웃 질문 지도</li><li>S·A·B·C 작업 우선순위</li><li>이번 달 실행 과제</li></ul></div>
+        </article>
+        <article class="svc">
+          <p class="n">03</p>
+          <div><h3>정보 구조·콘텐츠 설계</h3><p>홈페이지와 블로그에 들어갈 콘텐츠의 개요를 질문과 답 구조로 설계하고, 의료진 이력과 진료 근거를 정리합니다. 채널마다 다른 병원명·주소 표기도 통일합니다.</p></div>
+          <div class="out"><p class="label">결과물</p><ul><li>홈페이지·블로그 콘텐츠 개요</li><li>진료 FAQ와 의료진 소개 정리</li><li>채널별 정보 통일 가이드</li></ul></div>
+        </article>
+        <article class="svc">
+          <p class="n">04</p>
+          <div><h3>인용 모니터링·개선</h3><p>매달 같은 질문으로 다시 측정해 인용 횟수와 인용 위치의 변화를 보고하고, 그 결과로 다음 달 전략을 조정합니다.</p></div>
+          <div class="out"><p class="label">결과물</p><ul><li>월간 인용 변화 리포트</li><li>개선 우선순위 업데이트</li></ul></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec pad" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="label">Who it's for</p>
+        <h2>이런 고민을 가진 병원과 함께합니다</h2>
+      </div>
+      <div class="fit">
+        <div><span>NEW PATIENTS</span>신규 환자 유입이 줄어 새로운 채널이 필요한 병원</div>
+        <div><span>SPECIALTY</span>특정 진료 분야의 전문성을 더 알리고 싶은 병원</div>
+        <div><span>MEASURE</span>지금 하는 마케팅의 성과를 어떻게 봐야 할지 막막한 병원</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec pad" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="label">FAQ</p>
+        <h2>자주 묻는 질문</h2>
+      </div>
+      <div class="faq">
+        <details><summary>GEO를 하면 AI가 우리 병원을 반드시 추천하나요?</summary><p>아닙니다. AI 답변은 시점과 검색 조건, 서비스에 따라 달라집니다. GEO는 AI 답변을 조종하는 기술이 아니라, AI가 정보를 찾고 이해하는 환경에 맞춰 콘텐츠의 품질과 구조를 개선해 인용될 가능성을 높이는 전략입니다.</p></details>
+        <details><summary>그럼 이제 SEO는 필요 없나요?</summary><p>여전히 필요합니다. 검색에 연결된 AI 서비스는 웹에 공개된 정보를 참고하기 때문에, 좋은 SEO는 GEO의 기본기입니다. 두 가지를 함께 설계합니다.</p></details>
+        <details><summary>네이버와 ChatGPT를 같은 방식으로 관리하면 되나요?</summary><p>겹치는 부분은 있지만 같지 않습니다. 참고하는 정보의 범위와 답변을 보여 주는 방식이 다르기 때문에 채널별로 정보 구조를 따로 설계합니다.</p></details>
+        <details><summary>결과는 얼마나 지나야 확인할 수 있나요?</summary><p>진료과목, 지역, 현재 온라인 정보 상태에 따라 다릅니다. 진단 단계에서 기준이 되는 측정값을 먼저 기록하고, 이후 매달 같은 질문으로 변화를 확인합니다.</p></details>
+        <details><summary>의료광고 심의 문제는 없나요?</summary><p>치료 효과 보장, 후기 형식의 과장, 다른 병원과의 비교처럼 의료법이 금지하는 표현은 쓰지 않습니다. 의료진 감수를 거친 정확한 정보를 원칙으로 합니다.</p></details>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= CASES ======================= -->
+<div class="view" id="v-cases" data-view="cases" hidden>
+  <section class="intro pad">
+    <div class="wrap">
+      <p class="label sky">GEO cases <span class="sample">예시 데이터</span></p>
+      <h1>AI 답변에<br><b>이름이 오르기까지.</b></h1>
+      <p>같은 질문을 2~4개월 간격으로 다시 물어 인용 변화를 측정하는 방식을 보여 주는 예시입니다. 실제 병원의 성과가 아닙니다.</p>
+    </div>
+    <div class="waves" data-waves="soft"></div>
+  </section>
+  <section class="sec pad">
+    <div class="wrap">
+      <div class="chips" role="group" aria-label="진료과 필터">
+        <button class="chip" type="button" aria-pressed="true" data-f="all">전체</button>
+        <button class="chip" type="button" aria-pressed="false" data-f="정형외과">정형외과</button>
+        <button class="chip" type="button" aria-pressed="false" data-f="피부과">피부과</button>
+        <button class="chip" type="button" aria-pressed="false" data-f="치과">치과</button>
+        <button class="chip" type="button" aria-pressed="false" data-f="한의원">한의원</button>
+      </div>
+      <div class="case-list" data-cases="all"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= INSIGHTS ======================= -->
+<div class="view" id="v-insights" data-view="insights" hidden>
+  <section class="intro pad">
+    <div class="wrap">
+      <p class="label sky">Insights</p>
+      <h1>병원 GEO를<br><b>공부하고 검증한 기록</b></h1>
+      <p>GEO의 원리와 병원 마케팅 전략을 하나씩 확인하며 정리한 칼럼입니다. 새 글은 SIAN LAB 블로그에 먼저 올라갑니다.</p>
+    </div>
+    <div class="waves" data-waves="soft"></div>
+  </section>
+  <section class="sec pad">
+    <div class="wrap">
+      <div class="post-list" data-posts="rows"></div>
+      <p style="margin-top:28px"><a class="btn ghost" href="https://sianlab.inblog.io/" target="_blank" rel="noopener">SIAN LAB 블로그에서 모든 글 보기 <svg><use href="#i-arrow"/></svg></a></p>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= CONTACT ======================= -->
+<div class="view" id="v-contact" data-view="contact" hidden>
+  <section class="intro pad">
+    <div class="wrap">
+      <p class="label sky">Contact</p>
+      <h1>다음 환자의 질문에<br><b>우리 병원이 답이 되도록.</b></h1>
+      <p>진료과목과 지역을 알려 주시면 무료 AI 노출 진단 결과를 보내 드립니다.</p>
+    </div>
+    <div class="waves" data-waves="soft"></div>
+  </section>
+  <section class="sec pad">
+    <div class="wrap contact-grid">
+      <form class="inq" id="inq" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+        <input type="hidden" name="form-name" value="contact">
+        <p class="hp"><label>비워 두세요 <input id="f-bot" name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+        <label>병원명<input id="f-clinic" name="clinic" required autocomplete="organization" placeholder="예: ㅇㅇ정형외과"></label>
+        <label>진료과목
+          <select id="f-dept" name="dept" required>
+            <option value="">선택해 주세요</option>
+            <option>정형외과</option><option>피부과</option><option>치과</option><option>한의원</option>
+            <option>성형외과</option><option>안과</option><option>내과</option><option>산부인과</option><option>기타</option>
+          </select>
+        </label>
+        <label>지역<input id="f-region" name="region" required placeholder="예: 경기 성남시 분당구"></label>
+        <label>담당자 성함<input id="f-name" name="name" required autocomplete="name"></label>
+        <label>연락처<input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="010-0000-0000"></label>
+        <label>이메일<input id="f-email" name="email" type="email" required autocomplete="email"></label>
+        <label class="full">가장 궁금한 점<textarea id="f-msg" name="message" placeholder="예: 무릎 통증 관련 질문에서 우리 병원이 AI 답변에 나오는지 알고 싶어요."></textarea></label>
+        <label class="full agree"><input id="f-agree" type="checkbox" name="agree" required> 상담을 위한 개인정보(성함, 연락처, 이메일) 수집과 이용에 동의합니다. 수집한 정보는 상담 목적으로만 쓰고 상담 종료 후 파기합니다.</label>
+        <div class="full row">
+          <button class="btn" type="submit">무료 진단 신청하기 <svg><use href="#i-arrow"/></svg></button>
+          <p class="form-msg" id="form-msg" role="status"></p>
+        </div>
+      </form>
+      <aside class="side">
+        <div class="box">
+          <p class="label">Email</p>
+          <h3>이메일로 바로 문의</h3>
+          <p>진료과목, 지역, 병원명을 함께 보내 주세요.</p>
+          <div class="mail"><span id="email">contact@sian-medical.kr</span><button type="button" id="copyBtn">복사</button></div>
+          <a class="btn mail-btn" data-mail href="mailto:contact@sian-medical.kr">메일 보내기 <svg><use href="#i-arrow"/></svg></a>
+        </div>
+        <div class="box">
+          <p class="label">Free diagnosis</p>
+          <h3>무료 진단은 이렇게 진행됩니다</h3>
+          <ol>
+            <li>진료과목과 지역에 맞는 환자 질문을 고릅니다.</li>
+            <li>주요 AI 서비스에 같은 질문을 입력합니다.</li>
+            <li>어떤 병원과 출처가 쓰였는지 정리해 보내 드립니다.</li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </section>
+</div>
+
+</main>
+
+<section class="sec cta-band pad" id="cta-band">
+  <div class="wrap">
+    <div>
+      <p class="label">Free AI visibility check</p>
+      <h2>지금 환자가 AI에게 묻는 질문에<br><b>우리 병원은 등장하고 있을까요?</b></h2>
+      <p>진료과목과 지역만 알려 주시면 현재 AI 노출 상태를 진단해 드립니다.</p>
+    </div>
+    <div class="actions"><a class="btn" href="#contact" data-go="contact">무료 진단 신청 <svg><use href="#i-arrow"/></svg></a><a class="btn line" data-mail href="mailto:contact@sian-medical.kr">contact@sian-medical.kr</a></div>
+  </div>
+  <div class="waves" data-waves="band"></div>
+</section>
+
+<footer class="pad">
+  <div class="wrap">
+    <div>
+      <a class="brand" href="#home" data-go="home"><span class="logo">SIAN <span>LAB</span></span><small>MEDICAL GEO MARKETING</small></a>
+      <p>환자의 검색 의도와 AI 검색 환경을 분석하는 병원 GEO 마케팅 연구소</p>
+    </div>
+    <ul>
+      <li><a href="#lab" data-go="lab">연구소</a></li>
+      <li><a href="#service" data-go="service">서비스</a></li>
+      <li><a href="#cases" data-go="cases">GEO 케이스</a></li>
+      <li><a href="#insights" data-go="insights">인사이트</a></li>
+      <li><a href="https://sianlab.inblog.io/" target="_blank" rel="noopener">블로그</a></li>
+      <li><a href="#contact" data-go="contact">진단 문의</a></li>
+    </ul>
+    <p class="copy"><span>SIAN LAB · FROM SEARCH TO TRUST</span><span>© 2026 SIAN LAB</span></p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* ---------- 칼럼 목록: 새 칼럼을 쓰면 여기 맨 위에 추가하세요 ---------- */
+  const POSTS=[
+    {date:"2026.10.31",tag:"전략",title:"병원 GEO 마케팅, AI에 노출되는 것보다 중요한 것은 무엇일까?",
+     summary:"키워드가 아닌 환자의 질문 구조, 네이버 AEO와 GEO의 차이, 콘텐츠 제작을 넘어선 컨설팅 전략까지 AI 검색 시대에 병원 마케터가 갖춰야 할 관점을 정리했습니다.",
+     url:"https://sianlab.inblog.io/390306"},
+    {date:"2026.10.23",tag:"기초",title:"GEO 마케팅이란? SEO와 다른 점부터 공부하기",
+     summary:"GEO와 기존 SEO의 차이, 생성형 AI 검색에서 브랜드가 언급되고 인용되는 원리, 콘텐츠 최적화 방법까지 처음 공부하는 분도 이해할 수 있게 정리했습니다.",
+     url:"https://sianlab.inblog.io/390072"},
+    {date:"2026.10.23",tag:"이야기",title:"병원 GEO 마케팅 선택의 이유, 경력단절 엄마가 뛰어든 까닭",
+     summary:"SIAN LAB을 운영하는 사람이 왜 병원 GEO 마케팅을 선택했는지, 시작하게 된 이야기를 담았습니다.",
+     url:"https://sianlab.inblog.io/%EB%B3%91%EC%9B%90-geo-%EB%A7%88%EC%BC%80%ED%8C%85-%EC%84%A0%ED%83%9D%EC%9D%98-%EC%9D%B4%EC%9C%A0-%EA%B2%BD%EB%A0%A5%EB%8B%A8%EC%A0%88-%EC%97%84%EB%A7%88%EA%B0%80-%EB%9B%B0%EC%96%B4%EB%93%A0-%EA%B9%8C%EB%8B%AD-390067"}
+  ];
+
+  /* ---------- GEO 케이스 (예시 데이터) ---------- */
+  const CASES=[
+    {dept:"정형외과",area:"경기 성남",title:"어깨 비수술 치료 질문에서<br>첫 번째 출처로",q:"분당 회전근개 비수술 치료 병원 추천",
+     problem:"블로그 글은 많았지만 치료 과정 설명이 흩어져 AI가 인용하지 않음",action:"치료 단계·기간·비용 범위를 Q&amp;A 구조로 재작성, 원장 학회 이력 정리",from:2,to:17,base:"측정 질문 50개 · 3개월"},
+    {dept:"피부과",area:"서울 강남",title:"시술 비교 질문에<br>병원 설명이 그대로 인용",q:"울쎄라랑 써마지 차이가 뭐야?",
+     problem:"가격 이벤트 위주 콘텐츠라 정보성 질문에는 노출되지 않음",action:"시술 원리·통증·유지 기간 비교표를 의료진 감수로 게시",from:0,to:11,base:"측정 질문 40개 · 4개월"},
+    {dept:"치과",area:"경기 수원",title:"임플란트 비용 질문에서<br>지역 대표 출처로",q:"수원 임플란트 비용이랑 기간 알려줘",
+     problem:"병원명이 채널마다 달라 AI가 서로 다른 병원으로 인식",action:"병원명·주소·진료시간 표기 통일, 비용 구성 안내 페이지 신설",from:5,to:22,base:"측정 질문 60개 · 3개월"},
+    {dept:"한의원",area:"대전 유성",title:"교통사고 후유증 질문에<br>처음으로 등장",q:"교통사고 나고 한의원 가도 보험 돼?",
+     problem:"자동차보험 적용 절차에 대한 정보가 홈페이지에 없음",action:"접수 절차·필요 서류·치료 기간을 단계별 안내문으로 정리",from:0,to:9,base:"측정 질문 30개 · 2개월"}
+  ];
+
+  /* 실제 배포 주소(도메인)를 연결하면 여기에 추가하세요. 문의 폼은 이 주소들에서만 전송됩니다. */
+  const FORM_HOSTS=[/\.netlify\.app$/];
+  const EMAIL="contact@sian-medical.kr";
+
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const arrow='<svg width="14" height="14"><use href="#i-arrow"/></svg>';
+
+  document.querySelectorAll('[data-posts="cards"]').forEach(el=>{
+    el.innerHTML=POSTS.slice(0,3).map(p=>`<a class="post" href="${p.url}" target="_blank" rel="noopener">
+      <p class="meta"><span>${p.date}</span><b>${esc(p.tag)}</b></p><h3>${esc(p.title)}</h3><p>${esc(p.summary)}</p><span class="go">칼럼 읽기 →</span></a>`).join("");
+  });
+  document.querySelectorAll('[data-posts="rows"]').forEach(el=>{
+    el.innerHTML=POSTS.map(p=>`<a class="post-row" href="${p.url}" target="_blank" rel="noopener">
+      <span class="d">${p.date}</span><div><h3>${esc(p.title)}</h3><p>${esc(p.summary)}</p></div><span class="tag">${esc(p.tag)}</span></a>`).join("");
+  });
+
+  const caseHTML=c=>`<article class="case" data-dept="${c.dept}">
+    <div><p class="dept">${c.dept} · ${c.area}</p><h3>${c.title}</h3><p class="q"><span>MEASURED QUERY</span>${esc(c.q)}</p></div>
+    <dl><dt>문제</dt><dd>${c.problem}</dd><dt>실행</dt><dd>${c.action}</dd></dl>
+    <div class="metric"><p class="k">AI 인용 질문 수</p><p class="v"><span class="from">${c.from}</span><span class="arr">→</span><span class="to">${c.to}</span></p><p class="t">${c.base}</p></div></article>`;
+  document.querySelector('[data-cases="preview"]').innerHTML=CASES.slice(0,2).map(caseHTML).join("");
+  document.querySelector('[data-cases="all"]').innerHTML=CASES.map(caseHTML).join("");
+
+  const chips=[...document.querySelectorAll('.chip')];
+  chips.forEach(c=>c.addEventListener('click',()=>{
+    chips.forEach(x=>x.setAttribute('aria-pressed',x===c));
+    const f=c.dataset.f;
+    document.querySelectorAll('[data-cases="all"] .case').forEach(a=>{a.hidden=!(f==='all'||a.dataset.dept===f)});
+  }));
+
+  /* ---------- 웨이브 선 다발 ---------- */
+  const NS="http://www.w3.org/2000/svg";
+  const SET={hero:{n:46,amp:70,op:.35},soft:{n:30,amp:46,op:.22},band:{n:40,amp:60,op:.28}};
+  document.querySelectorAll('[data-waves]').forEach(box=>{
+    const cfg=SET[box.dataset.waves]||SET.soft, W=1600, H=340;
+    const svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('preserveAspectRatio','none');svg.setAttribute('aria-hidden','true');
+    const g=document.createElementNS(NS,'g');g.setAttribute('class','drift');
+    for(let i=0;i<cfg.n;i++){
+      const t=i/(cfg.n-1), y0=H*.95-t*H*.35, y1=H*.25+t*cfg.amp, y2=H*.9-t*cfg.amp*.6, y3=H*.35+t*H*.3;
+      const p=document.createElementNS(NS,'path');
+      p.setAttribute('d',`M-60 ${y0.toFixed(1)} C ${(W*.28).toFixed(0)} ${y1.toFixed(1)}, ${(W*.55).toFixed(0)} ${y2.toFixed(1)}, ${W+60} ${y3.toFixed(1)}`);
+      p.setAttribute('stroke-opacity',(cfg.op*(.35+.65*Math.sin(Math.PI*t))).toFixed(3));
+      g.appendChild(p);
+    }
+    svg.appendChild(g);box.appendChild(svg);
+  });
+
+  /* ---------- 화면 전환 ---------- */
+  const views=[...document.querySelectorAll('.view')], names=views.map(v=>v.dataset.view);
+  const links=[...document.querySelectorAll('nav.menu a')];
+  const band=document.getElementById('cta-band');
+  function show(name,scroll){
+    if(!names.includes(name))name='home';
+    views.forEach(v=>v.hidden=v.dataset.view!==name);
+    links.forEach(a=>a.dataset.go===name?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+    band.hidden=name==='contact';
+    if(scroll)window.scrollTo({top:0});
+  }
+  document.addEventListener('click',e=>{
+    const a=e.target.closest('[data-go]');if(!a)return;
+    e.preventDefault();const n=a.dataset.go;
+    try{history.pushState(null,'','#'+n)}catch(_){}
+    show(n,true);
+  });
+  window.addEventListener('popstate',()=>show(location.hash.slice(1),true));
+  window.addEventListener('hashchange',()=>show(location.hash.slice(1),true));
+  show(location.hash.slice(1),false);
+
+  /* ---------- 이메일 복사 ---------- */
+  const btn=document.getElementById('copyBtn'),em=document.getElementById('email');
+  btn.addEventListener('click',()=>{
+    const done=()=>{btn.textContent='복사됨';setTimeout(()=>btn.textContent='복사',1600)};
+    const fb=()=>{const r=document.createRange();r.selectNodeContents(em);const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='Ctrl+C';};
+    try{navigator.clipboard.writeText(em.textContent).then(done,fb)}catch(_){fb()}
+  });
+
+  /* ---------- 이메일 연결 ---------- */
+  const mailto=(subject,body)=>`mailto:${EMAIL}?subject=${encodeURIComponent(subject)}`+(body?`&body=${encodeURIComponent(body)}`:'');
+  document.querySelectorAll('[data-mail]').forEach(a=>{
+    a.href=mailto('[SIAN LAB] 무료 AI 노출 진단 문의','병원명:\n진료과목:\n지역:\n담당자 성함:\n연락처:\n궁금한 점:\n');
+  });
+
+  /* ---------- 문의 폼: Netlify에서는 Netlify Forms로 접수, 그 밖에서는 메일 앱으로 연결 ---------- */
+  const form=document.getElementById('inq'),msg=document.getElementById('form-msg');
+  const val=id=>document.getElementById(id).value.trim();
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    msg.className='form-msg';
+    const bad=[...form.querySelectorAll('[required]')].find(el=>el.type==='checkbox'?!el.checked:!el.value.trim());
+    if(bad){msg.textContent=bad.type==='checkbox'?'개인정보 수집에 동의해 주세요.':'필수 항목을 모두 채워 주세요.';msg.classList.add('warn');bad.focus();return;}
+    if(!FORM_HOSTS.some(r=>r.test(location.hostname))){
+      const body=`병원명: ${val('f-clinic')}\n진료과목: ${val('f-dept')}\n지역: ${val('f-region')}\n담당자 성함: ${val('f-name')}\n연락처: ${val('f-phone')}\n이메일: ${val('f-email')}\n\n궁금한 점:\n${val('f-msg')}\n`;
+      const a=document.createElement('a');a.href=mailto(`[SIAN LAB] 무료 AI 노출 진단 문의 - ${val('f-clinic')}`,body);
+      document.body.appendChild(a);a.click();a.remove();
+      msg.textContent=`작성하신 내용으로 메일 앱을 열었어요. 내용을 확인하고 보내 주세요. 메일 앱이 열리지 않으면 ${EMAIL}로 직접 보내 주세요.`;
+      return;
+    }
+    msg.textContent='보내는 중…';
+    fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(new FormData(form)).toString()})
+      .then(r=>{if(!r.ok)throw 0;form.reset();msg.textContent='접수되었습니다. 진단 결과를 이메일로 보내 드릴게요.';})
+      .catch(()=>{msg.textContent=`전송하지 못했어요. 잠시 후 다시 시도하거나 ${EMAIL}로 보내 주세요.`;msg.classList.add('warn');});
+  });
+})();
+</script>
+</body>
+</html>
