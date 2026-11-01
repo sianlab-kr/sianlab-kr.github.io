@@ -691,8 +691,7 @@ footer .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:20px;
   </section>
   <section class="sec pad">
     <div class="wrap contact-grid">
-      <form class="inq" id="inq" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
-        <input type="hidden" name="form-name" value="contact">
+      <form class="inq" id="inq" name="contact" novalidate>
         <p class="hp"><label>비워 두세요 <input id="f-bot" name="bot-field" tabindex="-1" autocomplete="off"></label></p>
         <label>병원명<input id="f-clinic" name="clinic" required autocomplete="organization" placeholder="예: ㅇㅇ정형외과"></label>
         <label>진료과목
@@ -707,7 +706,7 @@ footer .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:20px;
         <label>연락처<input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="010-0000-0000"></label>
         <label>이메일<input id="f-email" name="email" type="email" required autocomplete="email"></label>
         <label class="full">가장 궁금한 점<textarea id="f-msg" name="message" placeholder="예: 무릎 통증 관련 질문에서 우리 병원이 AI 답변에 나오는지 알고 싶어요."></textarea></label>
-        <label class="full agree"><input id="f-agree" type="checkbox" name="agree" required> 상담을 위한 개인정보(성함, 연락처, 이메일) 수집과 이용에 동의합니다. 수집한 정보는 상담 목적으로만 쓰고 상담 종료 후 파기합니다.</label>
+        <label class="full agree"><input id="f-agree" type="checkbox" name="agree" required> 상담을 위한 개인정보(성함, 연락처, 이메일) 수집과 이용에 동의합니다. 수집한 정보는 메일 전송 서비스(FormSubmit)를 거쳐 SIAN LAB에 전달되며, 상담 목적으로만 쓰고 상담 종료 후 파기합니다.</label>
         <div class="full row">
           <button class="btn" type="submit">무료 진단 신청하기 <svg><use href="#i-arrow"/></svg></button>
           <p class="form-msg" id="form-msg" role="status"></p>
@@ -794,9 +793,9 @@ footer .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:20px;
      problem:"자동차보험 적용 절차에 대한 정보가 홈페이지에 없음",action:"접수 절차·필요 서류·치료 기간을 단계별 안내문으로 정리",from:0,to:9,base:"측정 질문 30개 · 2개월"}
   ];
 
-  /* 실제 배포 주소(도메인)를 연결하면 여기에 추가하세요. 문의 폼은 이 주소들에서만 전송됩니다. */
-  const FORM_HOSTS=[/\.netlify\.app$/];
   const EMAIL="contact@sian-medical.kr";
+  /* 문의 폼 접수: FormSubmit(무료)이 입력 내용을 EMAIL로 보내 줍니다. 첫 접수 때 EMAIL로 오는 활성화 메일을 한 번 확인해야 합니다. */
+  const FORM_ENDPOINT="https://formsubmit.co/ajax/"+EMAIL;
 
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const arrow='<svg width="14" height="14"><use href="#i-arrow"/></svg>';
@@ -877,7 +876,7 @@ footer .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:20px;
     a.href=mailto('[SIAN LAB] 무료 AI 노출 진단 문의','병원명:\n진료과목:\n지역:\n담당자 성함:\n연락처:\n궁금한 점:\n');
   });
 
-  /* ---------- 문의 폼: Netlify에서는 Netlify Forms로 접수, 그 밖에서는 메일 앱으로 연결 ---------- */
+  /* ---------- 문의 폼: 버튼 한 번으로 contact@ 메일함에 바로 접수 ---------- */
   const form=document.getElementById('inq'),msg=document.getElementById('form-msg');
   const val=id=>document.getElementById(id).value.trim();
   form.addEventListener('submit',e=>{
@@ -885,17 +884,21 @@ footer .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:20px;
     msg.className='form-msg';
     const bad=[...form.querySelectorAll('[required]')].find(el=>el.type==='checkbox'?!el.checked:!el.value.trim());
     if(bad){msg.textContent=bad.type==='checkbox'?'개인정보 수집에 동의해 주세요.':'필수 항목을 모두 채워 주세요.';msg.classList.add('warn');bad.focus();return;}
-    if(!FORM_HOSTS.some(r=>r.test(location.hostname))){
-      const body=`병원명: ${val('f-clinic')}\n진료과목: ${val('f-dept')}\n지역: ${val('f-region')}\n담당자 성함: ${val('f-name')}\n연락처: ${val('f-phone')}\n이메일: ${val('f-email')}\n\n궁금한 점:\n${val('f-msg')}\n`;
-      const a=document.createElement('a');a.href=mailto(`[SIAN LAB] 무료 AI 노출 진단 문의 - ${val('f-clinic')}`,body);
-      document.body.appendChild(a);a.click();a.remove();
-      msg.textContent=`작성하신 내용으로 메일 앱을 열었어요. 내용을 확인하고 보내 주세요. 메일 앱이 열리지 않으면 ${EMAIL}로 직접 보내 주세요.`;
-      return;
-    }
-    msg.textContent='보내는 중…';
-    fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(new FormData(form)).toString()})
-      .then(r=>{if(!r.ok)throw 0;form.reset();msg.textContent='접수되었습니다. 진단 결과를 이메일로 보내 드릴게요.';})
-      .catch(()=>{msg.textContent=`전송하지 못했어요. 잠시 후 다시 시도하거나 ${EMAIL}로 보내 주세요.`;msg.classList.add('warn');});
+    const done=()=>{form.reset();msg.textContent='접수되었습니다. 진단 결과를 이메일로 보내 드릴게요.';};
+    if(val('f-bot')){done();return;}
+    const sendBtn=form.querySelector('button[type=submit]');
+    sendBtn.disabled=true;msg.textContent='보내는 중…';
+    const data={
+      _subject:`[SIAN LAB] 무료 AI 노출 진단 문의 - ${val('f-clinic')}`,
+      _template:'table',_captcha:'false',_replyto:val('f-email'),
+      '병원명':val('f-clinic'),'진료과목':val('f-dept'),'지역':val('f-region'),
+      '담당자 성함':val('f-name'),'연락처':val('f-phone'),'이메일':val('f-email'),'궁금한 점':val('f-msg')
+    };
+    fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
+      .then(r=>r.json())
+      .then(d=>{if(String(d.success)!=='true')throw 0;done();})
+      .catch(()=>{msg.textContent=`전송하지 못했어요. 잠시 후 다시 시도하거나 ${EMAIL}로 보내 주세요.`;msg.classList.add('warn');})
+      .finally(()=>{sendBtn.disabled=false;});
   });
 })();
 </script>
